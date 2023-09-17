@@ -23,22 +23,35 @@ int menu()
 	return opcion;
 }
 
-void opcion_1(struct producto* puntero_producto, int contador_producto)
+
+// fucion reemplazar un producto para qe o lo tenga que ahcer en dos pasos
+
+//funcion modificar el precio solamente, o la cantidad, o sea un atributo solo != nombre
+
+//funcion avisar cuando quedan x elementos en inventario, por ejeplo menos de 5
+
+
+void ver_inventario(struct producto* puntero_producto, int contador_producto)
 {
 	printf("Ver inventario\n");
 	int i = 0;
 	while(i < contador_producto)
 	{	
-		printf("Inventario N %d|Nombre %s Precio %.2f$ Cantidad %d 	\n",
-		contador_producto,
+		printf("Inventario N %3d|Nombre %s Precio %.2f$ Cantidad %d 	\n",
+		i,
 		puntero_producto[i].nombre,
 		puntero_producto[i].precio, 
 		puntero_producto[i].cantidad);
 		i++;
 	}
 }
-int opcion_2(struct producto* puntero_producto, int contador_producto)
+int agregar_producto(struct producto* puntero_producto, int contador_producto)
 {	
+	/*Necesitamos sumar el puntero*/
+	for (int i = 0; i < contador_producto; i++)
+	{
+		puntero_producto++;
+	}
 	printf("Cargar producto\n");
 	printf("Ingress la informacion del producto: \n");
 	printf("Nombre: ");
@@ -47,13 +60,27 @@ int opcion_2(struct producto* puntero_producto, int contador_producto)
     scanf("%f", &puntero_producto -> precio);
     printf("Cantidad: ");
     scanf("%d", &puntero_producto -> cantidad);
-    contador_producto++;
+    contador_producto = contador_producto + 1;
     //printf("%d", contador_producto);
 	return contador_producto;
 }
-void opcion_3()
+void remove_producto(struct producto* puntero_producto, int* contador_producto, int subindice)
 {
-	printf("Borrar producto\n");
+    if (subindice < 0 || subindice >= *contador_producto)
+    {
+        printf("El número de inventario ingresado no es válido.\n");
+        return;
+    }
+
+    // dezplaza los productos hasta una posciion valida
+    for (int i = subindice; i < *contador_producto - 1; i++)
+    {
+        puntero_producto[i] = puntero_producto[i + 1];
+    }
+
+    (*contador_producto)--;
+    
+    printf("El producto en el inventario %d ha sido eliminado con éxito.\n", subindice);
 }
 
 int main()
@@ -61,6 +88,7 @@ int main()
 	int opcion;
 	struct producto prod[100];
 	int contador_producto = 0;
+	int subindice = 0;
 
 	do
     {	
@@ -68,22 +96,27 @@ int main()
 		
 		opcion = menu();
 		//menu();
-		//system("PAUSE");
+		getchar();
 		
-		if (opcion == 1)
+	if (opcion == 1)
 	{
-		opcion_1(prod, contador_producto);
+		ver_inventario(prod, contador_producto);
 		
 	}
 	else if(opcion == 2)
 	{
-		contador_producto = opcion_2(prod, contador_producto) + 1;
-		printf("%s %.2f$ %d \n", prod[contador_producto].nombre,prod[contador_producto].precio, prod[contador_producto].cantidad);
+		contador_producto = agregar_producto(&prod[0], contador_producto);
+		printf("Usted ingreso..");
+		//printf("%s %.2f$ %d \n", prod[0].nombre,prod[0].precio, prod[0].cantidad);
+		//printf("%s %.2f$ %d \n", prod[1].nombre,prod[1].precio, prod[1].cantidad);
 		//contador_producto++;
+		printf("\033[H\033[J");
 	}
-	else if(opcion == 3)
+	else if(opcion == 3) //struct producto* puntero_producto, int* contador_producto, int subindice
 	{
-		opcion_3();
+		printf("Ingrese el numero de producto que desea borrar*NO RECUPERABLE*");
+		scanf("%d", &subindice);
+		remove_producto(prod, &contador_producto, subindice);
 	}
 	else
 	{
